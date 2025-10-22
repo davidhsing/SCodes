@@ -101,9 +101,9 @@ bool SBarcodeGenerator::saveImage()
 
 void SBarcodeGenerator::drawCenterImage(QImage *parentImage, const QString &centerImage, QSize imageSize, int x, int y)
 {
-    QImage centerImage(imageSize, QImage::Format_RGB32);
-    centerImage.load(centerImage);
-    if (centerImage.isNull()) {
+    QImage loadedImage(imageSize, QImage::Format_RGB32);
+    loadedImage.load(centerImage);
+    if (loadedImage.isNull()) {
         qWarning() << "Center image could not be loaded!";
         return;
     }
@@ -116,14 +116,14 @@ void SBarcodeGenerator::drawCenterImage(QImage *parentImage, const QString &cent
 
     // Scale the center image to be smaller than background rectangle.
     float imageRatio = 0.8;
-    centerImage = centerImage.scaled(imageSize.width() * imageRatio,
+    loadedImage = loadedImage.scaled(imageSize.width() * imageRatio,
                                      imageSize.height() * imageRatio,
                                      Qt::KeepAspectRatio, Qt::SmoothTransformation);
 
     // Draw image.
-    painter.drawImage(x + (imageSize.width() - centerImage.width()) / 2,
-                      y + (imageSize.height() - centerImage.height()) / 2,
-                      centerImage);
+    painter.drawImage(x + (imageSize.width() - loadedImage.width()) / 2,
+                      y + (imageSize.height() - loadedImage.height()) / 2,
+                      loadedImage);
     painter.end();
 }
 
@@ -179,7 +179,6 @@ void SBarcodeGenerator::setEccLevel(int eccLevel)
     if (m_eccLevel == eccLevel) {
         return;
     }
-
     m_eccLevel = eccLevel;
     emit eccLevelChanged(m_eccLevel);
 }
@@ -196,13 +195,11 @@ void SBarcodeGenerator::setFormat(SCodes::SBarcodeFormat format)
             case SCodes::SBarcodeFormat::None:
                 qWarning() << "You need to set a specific format";
                 return;
-
             case SCodes::SBarcodeFormat::Any:
             case SCodes::SBarcodeFormat::OneDCodes:
             case SCodes::SBarcodeFormat::TwoDCodes:
                 qWarning() << "Multiple formats can't be used to generate a barcode";
                 return;
-
             default:
                 m_format = format;
                 emit formatChanged(m_format);
