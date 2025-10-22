@@ -64,7 +64,7 @@ All you need to do is to follow these steps.
 2. Update submodule `git submodule update --recursive --init` (you can also put wrapper files to your project manually without adding submodule)
 3. Add `include(scodes/src/SCodes.pri)` to your .pro file
 4. If you want to use barcode reader functionality you need to register `SBarcodeFilter` class for Qt5 or `SBarcodeScanner` class for Qt6. For both version, separate them with if directive to register as we did in barcode reader example([how to register reader class](#register-reader)). As for barcode generator functionality you just need to register `SBarcodeGenerator` class([how to register generator class](#register-generator)).
-5. Import SCodes in your Qml file `import com.scythestudio.scodes 1.0`
+5. Import SCodes in your Qml file `import Somco.SCodes 1.0`
 6. Import multimedia module `import QtMultimedia 5.15` for Qt5 or `import QtMultimedia` for Qt6.
 7. If build fails, try to add `CONFIG += c++17` to your .pro file
 8. You are done. Get inspired by [Qt5 QML Barcode Reader demo](https://github.com/scytheStudio/SCodes/blob/master/examples/QmlBarcodeReader/qml/Qt5ScannerPage.qml) or [Qt6 QML Barcode Reader demo](https://github.com/scytheStudio/SCodes/blob/master/examples/QmlBarcodeReader/qml/Qt6ScannerPage.qml) to test wrapper.
@@ -88,7 +88,7 @@ All you need to do is to follow these steps.
 5. Import SCodes in your Qml file 
 
     ```qml
-        import com.scythestudio.scodes 1.0
+        import Somco.SCodes 1.0
     ```
 
 6. You are done. Get inspired by [QML Barcode Reader demo](https://github.com/scytheStudio/SCodes/blob/master/examples/QmlBarcodeReader/qml/ScannerPage.qml) to test wrapper.
@@ -99,16 +99,16 @@ Registering the barcode reader classes with if directive:
 
 ```c++
     #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-        qmlRegisterType<SBarcodeFilter>("com.scythestudio.scodes", 1, 0, "SBarcodeScanner");
+        qmlRegisterType<SBarcodeFilter>("Somco.SCodes", 1, 0, "SBarcodeScanner");
     #else
-        qmlRegisterType<SBarcodeScanner>("com.scythestudio.scodes", 1, 0, "SBarcodeScanner");
+        qmlRegisterType<SBarcodeScanner>("Somco.SCodes", 1, 0, "SBarcodeScanner");
     #endif
 ```
 <a name="register-generator"></a>
 Registering the barcode generator class with associated enum:
 ```c++
-    qmlRegisterType<SBarcodeGenerator>("com.scythestudio.scodes", 1, 0, "SBarcodeGenerator");
-    qmlRegisterUncreatableMetaObject(SCodes::staticMetaObject, "com.scythestudio.scodes", 1, 0, "SCodes", "Error: only enums");
+    qmlRegisterType<SBarcodeGenerator>("Somco.SCodes", 1, 0, "SBarcodeGenerator");
+    qmlRegisterUncreatableMetaObject(SCodes::staticMetaObject, "Somco.SCodes", 1, 0, "SCodes", "Error: only enums");
 ```
 
 <a name="porting"></a>

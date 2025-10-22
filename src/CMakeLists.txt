@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.16)
 
 project(SCodes LANGUAGES CXX)
 option(SCODES_DEBUG OFF)
@@ -37,8 +37,7 @@ add_library(${PROJECT_NAME} STATIC ${SOURCE_CPP})
 target_sources(${PROJECT_NAME} PRIVATE private/debug.h)
 set_target_properties(${PROJECT_NAME} PROPERTIES
     QT_QML_MODULE_VERSION 1.0
-    QT_QML_MODULE_URI com.scythestudio.scodes
-
+    QT_QML_MODULE_URI Somco.SCodes
 )
 if(SCODES_DEBUG)
     message("${PROJECT_NAME} debug messages enabled: ${SS_SCODES_DEBUG}")

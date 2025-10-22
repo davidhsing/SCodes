@@ -2,7 +2,7 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtMultimedia 5.12
 import QtQuick.Layouts 1.12
-import com.scythestudio.scodes 1.0
+import Somco.SCodes 1.0
 
 
 /*!
@@ -43,8 +43,8 @@ ApplicationWindow {
 
     onGenerationFinished: function (error) {
       if (error === "") {
-        console.log(barcodeGenerator.filePath)
-        image.source = "file:///" + barcodeGenerator.filePath
+        console.log(barcodeGenerator.outputFile)
+        image.source = "file:///" + barcodeGenerator.outputFile
       } else {
         generateLabel.text = error
         generatePopup.open()

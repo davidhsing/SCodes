@@ -23,24 +23,19 @@ bool SBarcodeGenerator::generate(const QString &inputString)
             return false;
         } else {
             // Change ecc level to max to generate image on QR code.
-            if (m_format == SCodes::SBarcodeFormat::QRCode && !m_imagePath.isEmpty()) {
-                if (m_eccLevel < 8) {
+            if (m_format == SCodes::SBarcodeFormat::QRCode && !m_centerImage.isEmpty()) {
+                if (eccLevel() < 8) {
                     qDebug() << "To draw image on QR Code use maximum level of ecc. Setting it to 8.";
-
-                    setEccLvel(8);
+                    setEccLevel(8);
                 }
             }
 
-            ZXing::MultiFormatWriter writer = ZXing::MultiFormatWriter(SCodes::toZXingFormat(m_format))
-                                                  .setMargin(m_margin)
-                                                  .setEccLevel(m_eccLevel);
+            ZXing::MultiFormatWriter writer = ZXing::MultiFormatWriter(SCodes::toZXingFormat(m_format)).setMargin(imageMargin()).setEccLevel(eccLevel());
+            auto qrCodeMatrix = writer.encode(inputString.toStdString(), imageWidth(), imageHeight());
+            QImage image(imageWidth(), imageHeight(), QImage::Format_ARGB32);
 
-            auto qrCodeMatrix = writer.encode(inputString.toStdString(), m_width, m_height);
-
-            QImage image(m_width, m_height, QImage::Format_ARGB32);
-
-            for (int y = 0; y < m_height; ++y) {
-                for (int x = 0; x < m_width; ++x) {
+            for (int y = 0; y < imageHeight(); ++y) {
+                for (int x = 0; x < imageWidth(); ++x) {
                     if (qrCodeMatrix.get(x, y)) {
                         image.setPixelColor(x, y, m_foregroundColor);
                     } else {
@@ -50,31 +45,22 @@ bool SBarcodeGenerator::generate(const QString &inputString)
             }
 
             // Center images works only on QR codes.
-            if (m_format == SCodes::SBarcodeFormat::QRCode) {
-                if (!m_imagePath.isEmpty()) {
-                    QSize centerImageSize(m_width / m_centerImageRatio, m_height / m_centerImageRatio);
-                    drawCenterImage(&image, m_imagePath, centerImageSize,
-                                    (image.width() - centerImageSize.width()) / 2,
-                                    (image.height() - centerImageSize.height()) / 2);
-                } else {
-                    qDebug() << "Center Image path is empty. Skip drawing center image.";
-                }
-            } else {
-                qDebug() << "Center images works only on QR codes.";
+            if (m_format == SCodes::SBarcodeFormat::QRCode && !m_centerImage.isEmpty()) {
+                QSize centerImageSize(imageWidth() / m_centerImageRatio, imageHeight() / m_centerImageRatio);
+                drawCenterImage(&image, m_centerImage, centerImageSize, (image.width() - centerImageSize.width()) / 2, (image.height() - centerImageSize.height()) / 2);
             }
-
-            m_filePath = QDir::tempPath() + "/" + m_fileName + "." + m_extension;
-
-            QFile file{m_filePath};
+            m_outputFile = m_filePath + "/" + m_fileName;
+            if (!m_fileExtension.isEmpty()) {
+                m_outputFile += "." + m_fileExtension;
+            }
+            QFile file{m_outputFile};
             if (file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
                 image.save(&file);
             } else {
                 qWarning() << "Could not open file for writing!";
                 return false;
             }
-
             emit generationFinished();
-
             return true;
         }
     } catch (const std::exception &e) {
@@ -88,50 +74,41 @@ bool SBarcodeGenerator::generate(const QString &inputString)
 
 bool SBarcodeGenerator::saveImage()
 {
-    if (m_filePath.isEmpty()) {
+    if (m_outputFile.isEmpty()) {
         return false;
     }
-
     #ifdef Q_OS_ANDROID
-
-    #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    if (QtAndroid::checkPermission(QString("android.permission.WRITE_EXTERNAL_STORAGE")) ==
-      QtAndroid::PermissionResult::Denied)
-    {
-        QtAndroid::PermissionResultMap resultHash =
-          QtAndroid::requestPermissionsSync(QStringList({ "android.permission.WRITE_EXTERNAL_STORAGE" }));
-        if (resultHash["android.permission.WRITE_EXTERNAL_STORAGE"] == QtAndroid::PermissionResult::Denied) {
-            return false;
+        #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+        if (QtAndroid::checkPermission(QString("android.permission.WRITE_EXTERNAL_STORAGE")) == QtAndroid::PermissionResult::Denied)
+        {
+            QtAndroid::PermissionResultMap resultHash =
+              QtAndroid::requestPermissionsSync(QStringList({ "android.permission.WRITE_EXTERNAL_STORAGE" }));
+            if (resultHash["android.permission.WRITE_EXTERNAL_STORAGE"] == QtAndroid::PermissionResult::Denied) {
+                return false;
+            }
         }
+        #else
+            QtAndroidPrivate::requestPermission(QString("android.permission.WRITE_EXTERNAL_STORAGE"));
+        #endif
+    #endif
+    QString docFolder = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + "/" + m_fileName;
+    if (!m_fileExtension.isEmpty()) {
+        docFolder += "." + m_fileExtension;
     }
-    #else
-
-    QtAndroidPrivate::requestPermission(QString("android.permission.WRITE_EXTERNAL_STORAGE"));
-
-    #endif
-    #endif
-
-    QString docFolder = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + "/" + m_fileName + "."
-      + m_extension;
-
-    QFile::copy(m_filePath, docFolder);
-
+    QFile::copy(m_outputFile, docFolder);
     return true;
 }
 
-void SBarcodeGenerator::drawCenterImage(QImage *parentImage, const QString &imagePath, QSize imageSize, int x, int y)
+void SBarcodeGenerator::drawCenterImage(QImage *parentImage, const QString &centerImage, QSize imageSize, int x, int y)
 {
     QImage centerImage(imageSize, QImage::Format_RGB32);
-    centerImage.load(imagePath);
-
+    centerImage.load(centerImage);
     if (centerImage.isNull()) {
         qWarning() << "Center image could not be loaded!";
         return;
     }
-
     // Create a painter to overlay the center image on the parentImage.
     QPainter painter(parentImage);
-
     // Draw background rectangle.
     painter.setBrush(Qt::white);
     painter.setPen(Qt::NoPen);
@@ -150,7 +127,54 @@ void SBarcodeGenerator::drawCenterImage(QImage *parentImage, const QString &imag
     painter.end();
 }
 
-void SBarcodeGenerator::setEccLvel(int eccLevel)
+int SBarcodeGenerator::imageWidth() const
+{
+    return m_imageWidth;
+}
+
+void SBarcodeGenerator::setImageWidth(int width)
+{
+    if (m_imageWidth == width) {
+        return;
+    }
+    m_imageWidth = width;
+    emit imageWidthChanged(m_imageWidth);
+}
+
+int SBarcodeGenerator::imageHeight() const
+{
+    return m_imageHeight;
+}
+
+void SBarcodeGenerator::setImageHeight(int height)
+{
+    if (m_imageHeight == height) {
+        return;
+    }
+    m_imageHeight = height;
+    emit imageHeightChanged(m_imageHeight);
+}
+
+int SBarcodeGenerator::imageMargin() const
+{
+    return m_imageMargin;
+}
+
+void SBarcodeGenerator::setImageMargin(int margin)
+{
+    if (m_imageMargin == margin) {
+        return;
+    }
+    m_imageMargin = margin;
+    emit imageMarginChanged(m_imageMargin);
+}
+
+int SBarcodeGenerator::eccLevel() const
+{
+    return m_eccLevel;
+}
+
+void SBarcodeGenerator::setEccLevel(int eccLevel)
 {
     if (m_eccLevel == eccLevel) {
         return;
@@ -191,19 +215,18 @@ void SBarcodeGenerator::setFormat(const QString &formatName)
     setFormat(SCodes::fromString(formatName));
 }
 
-QString SBarcodeGenerator::imagePath() const
+QString SBarcodeGenerator::centerImage() const
 {
-    return m_imagePath;
+    return m_centerImage;
 }
 
-void SBarcodeGenerator::setImagePath(const QString &imagePath)
+void SBarcodeGenerator::setCenterImage(const QString &centerImage)
 {
-    if (m_imagePath == imagePath) {
+    if (m_centerImage == centerImage) {
         return;
     }
-
-    m_imagePath = imagePath;
-    emit imagePathChanged();
+    m_centerImage = centerImage;
+    emit centerImageChanged();
 }
 
 int SBarcodeGenerator::centerImageRatio() const
@@ -216,7 +239,6 @@ void SBarcodeGenerator::setCenterImageRatio(int centerImageRatio)
     if (m_centerImageRatio == centerImageRatio) {
         return;
     }
-
     m_centerImageRatio = centerImageRatio;
     emit centerImageRatioChanged();
 }
@@ -231,7 +253,6 @@ void SBarcodeGenerator::setForegroundColor(const QColor &foregroundColor)
     if (m_foregroundColor == foregroundColor) {
         return;
     }
-
     m_foregroundColor = foregroundColor;
     emit foregroundColorChanged();
 }
@@ -246,7 +267,67 @@ void SBarcodeGenerator::setBackgroundColor(const QColor &backgroundColor)
     if (m_backgroundColor == backgroundColor) {
         return;
     }
-
     m_backgroundColor = backgroundColor;
     emit backgroundColorChanged();
+}
+
+QString SBarcodeGenerator::filePath() const
+{
+    return m_filePath;
+}
+
+void SBarcodeGenerator::setFilePath(const QString &filePath)
+{
+    if (m_filePath == filePath) {
+        return;
+    }
+    emit filePathChanged(m_filePath);
+    m_filePath = filePath;
+}
+
+QString SBarcodeGenerator::fileName() const
+{
+    return m_fileName;
+}
+
+void SBarcodeGenerator::setFileName(const QString &fileName)
+{
+    if (m_fileName == fileName) {
+        return;
+    }
+    m_fileName = fileName;
+    emit fileNameChanged(m_fileName);
+}
+
+QString SBarcodeGenerator::fileExtension() const
+{
+    return m_fileExtension;
+}
+
+void SBarcodeGenerator::setFileExtension(const QString &fileExtension)
+{
+    if (m_fileExtension == fileExtension) {
+        return;
+    }
+    m_fileExtension = fileExtension;
+    emit fileExtensionChanged(m_fileExtension);
+}
+
+QString SBarcodeGenerator::outputFile() const
+{
+    return m_outputFile;
+}
+
+QString SBarcodeGenerator::inputText() const
+{
+    return m_inputText;
+}
+
+void SBarcodeGenerator::setInputText(const QString &inputText)
+{
+    if (m_inputText == inputText) {
+        return;
+    }
+    m_inputText = inputText;
+    emit inputTextChanged(m_inputText);
 }

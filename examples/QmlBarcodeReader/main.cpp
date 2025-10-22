@@ -20,13 +20,13 @@ int main(int argc, char* argv[])
 
     qmlRegisterSingletonType(QUrl("qrc:/qml/Theme.qml"), "Theme", 1, 0, "Theme");
     qmlRegisterUncreatableMetaObject(
-        SCodes::staticMetaObject, "com.scythestudio.scodes", 1, 0, "SCodes", "Error, enum type");
+        SCodes::staticMetaObject, "Somco.SCodes", 1, 0, "SCodes", "Error, enum type");
 
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    qmlRegisterType<SBarcodeFilter>("com.scythestudio.scodes", 1, 0, "SBarcodeScanner");
+    qmlRegisterType<SBarcodeFilter>("Somco.SCodes", 1, 0, "SBarcodeScanner");
     engine.load(QUrl(QStringLiteral("qrc:/qml/Qt5ScannerPage.qml")));
 #else
-    qmlRegisterType<SBarcodeScanner>("com.scythestudio.scodes", 1, 0, "SBarcodeScanner");
+    qmlRegisterType<SBarcodeScanner>("Somco.SCodes", 1, 0, "SBarcodeScanner");
     engine.load(QUrl(QStringLiteral("qrc:/qml/Qt6ScannerPage.qml")));
 #endif
 

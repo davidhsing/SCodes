@@ -1,6 +1,6 @@
 set(COMPANY "Scythe Studio")
 set(COPYRIGHT "Copyright (c) 2022 Scythe Studio. Licensed under the Apache License, Version 2.0.")
-set(IDENTIFIER "com.scythestudio.scodes.example")
+set(IDENTIFIER "Somco.SCodes.example")
 
 # ---CONFIGURATION---
 option(USE_QML "Add QML support" ON)

@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtMultimedia
-import com.scythestudio.scodes 1.0
+import Somco.SCodes 1.0
 
 
 /*!
