@@ -66,16 +66,16 @@ Result ReadBarcode(const QImage& img, const ReaderOptions& options = { })
               case QImage::Format_ARGB32:
               case QImage::Format_RGB32:
                   #if Q_BYTE_ORDER == Q_LITTLE_ENDIAN
-                  return ImageFormat::BGRA;
+                  return ImageFormat::BGRX;
 
                   #else
-                  return ImageFormat::ARGB;
+                  return ImageFormat::XRGB;
 
                   #endif
               case QImage::Format_RGB888: return ImageFormat::RGB;
 
               case QImage::Format_RGBX8888:
-              case QImage::Format_RGBA8888: return ImageFormat::RGBA;
+              case QImage::Format_RGBA8888: return ImageFormat::RGBX;
 
               case QImage::Format_Grayscale8: return ImageFormat::Lum;
 
