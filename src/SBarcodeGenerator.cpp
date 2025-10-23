@@ -24,18 +24,18 @@ bool SBarcodeGenerator::generate(const QString &inputString)
         } else {
             // Change ecc level to max to generate image on QR code.
             if (m_format == SCodes::SBarcodeFormat::QRCode && !m_centerImage.isEmpty()) {
-                if (eccLevel() < 8) {
+                if (m_eccLevel < 8) {
                     qDebug() << "To draw image on QR Code use maximum level of ecc. Setting it to 8.";
                     setEccLevel(8);
                 }
             }
 
-            ZXing::MultiFormatWriter writer = ZXing::MultiFormatWriter(SCodes::toZXingFormat(m_format)).setMargin(imageMargin()).setEccLevel(eccLevel());
-            auto qrCodeMatrix = writer.encode(inputString.toStdString(), imageWidth(), imageHeight());
-            QImage image(imageWidth(), imageHeight(), QImage::Format_ARGB32);
+            ZXing::MultiFormatWriter writer = ZXing::MultiFormatWriter(SCodes::toZXingFormat(m_format)).setMargin(imageMargin()).setEccLevel(m_eccLevel);
+            auto qrCodeMatrix = writer.encode(inputString.toStdString(), m_imageWidth, m_imageHeight);
+            QImage image(m_imageWidth, m_imageHeight, QImage::Format_ARGB32);
 
-            for (int y = 0; y < imageHeight(); ++y) {
-                for (int x = 0; x < imageWidth(); ++x) {
+            for (int y = 0; y < m_imageHeight; ++y) {
+                for (int x = 0; x < m_imageWidth; ++x) {
                     if (qrCodeMatrix.get(x, y)) {
                         image.setPixelColor(x, y, m_foregroundColor);
                     } else {
@@ -46,7 +46,7 @@ bool SBarcodeGenerator::generate(const QString &inputString)
 
             // Center images works only on QR codes.
             if (m_format == SCodes::SBarcodeFormat::QRCode && !m_centerImage.isEmpty()) {
-                QSize centerImageSize(imageWidth() / m_centerImageRatio, imageHeight() / m_centerImageRatio);
+                QSize centerImageSize(m_imageWidth / m_centerImageRatio, m_imageHeight / m_centerImageRatio);
                 drawCenterImage(&image, m_centerImage, centerImageSize, (image.width() - centerImageSize.width()) / 2, (image.height() - centerImageSize.height()) / 2);
             }
             m_outputFile = m_filePath + "/" + m_fileName;
