@@ -76,7 +76,7 @@ signals:
     void captureRectChanged(const QRectF& captureRect);
     void capturedChanged(const QString& captured);
     void cameraAvailableChanged(const bool cameraAvailable);
-    void errorOccured(const QString& errorString);
+    void errorOccurred(const QString& error);
 protected:
     QCamera* makeDefaultCamera();
 private:
