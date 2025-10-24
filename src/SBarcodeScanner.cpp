@@ -65,12 +65,12 @@ QCamera* SBarcodeScanner::makeDefaultCamera()
     auto defaultCamera = QMediaDevices::defaultVideoInput();
     if (defaultCamera.isNull())
     {
-        emit errorOccurred("No default camera could be found on the system");
+        errorOccurred("No default camera could be found on the system");
         return nullptr;
     }
     auto camera = new QCamera(defaultCamera, this);
     if (camera->error()) {
-        emit errorOccurred("Error during camera initialization: " + camera->errorString());
+        errorOccurred("Error during camera initialization: " + camera->errorString());
         return nullptr;
     }
     auto supportedFormats = camera->cameraDevice().videoFormats();
@@ -83,7 +83,7 @@ QCamera* SBarcodeScanner::makeDefaultCamera()
     }
     if (supportedFormats.empty())
     {
-        emit errorOccurred("A default camera was found but it has no supported formats. The Camera may be wrongly configured.");
+        errorOccurred("A default camera was found but it has no supported formats. The Camera may be wrongly configured.");
         return nullptr;
     }
     /// Pick best format - most pixels
@@ -154,7 +154,7 @@ void SBarcodeScanner::setCamera(QCamera* newCamera)
     {
         auto format = newCamera->cameraFormat();
         connect(newCamera,&QCamera::errorOccurred,this,[this](auto err, const auto& string){
-            emit errorOccurred("Camera error:" + string);
+            errorOccurred("Camera error:" + string);
         });
         m_decoder.setResolution(format.resolution());
         m_capture.setCamera(newCamera);

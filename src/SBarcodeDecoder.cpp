@@ -158,7 +158,7 @@ void SBarcodeDecoder::process(const QImage& capturedImage, ZXing::BarcodeFormats
         }
     }
     catch(std::exception& e) {
-        emit errorOccured("ZXing exception: " + QString::fromLocal8Bit(e.what()));
+        emit errorOccurred("ZXing exception: " + QString::fromLocal8Bit(e.what()));
     }
 }
 
