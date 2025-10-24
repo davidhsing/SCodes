@@ -54,7 +54,6 @@ public:
     void setCaptureRect(const QRectF& captureRect);
     void setCamera(QCamera* newCamera);
     void setForwardVideoSink(QVideoSink* sink);
-    void setCameraAvailable(bool available);
 
     /*!
      * This function is called after all properties set in Qml instantiation have been assigned.
