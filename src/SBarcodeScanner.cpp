@@ -128,15 +128,6 @@ void SBarcodeScanner::setCaptureRect(const QRectF& captureRect)
     emit captureRectChanged(m_captureRect);
 }
 
-void SBarcodeScanner::setScanning(bool scanning)
-{
-    if (m_scanning == scanning) {
-        return;
-    }
-    m_scanning = scanning;
-    emit scanningChanged(m_scanning);
-}
-
 void SBarcodeScanner::setCamera(QCamera* newCamera)
 {
     if (m_camera == newCamera){
