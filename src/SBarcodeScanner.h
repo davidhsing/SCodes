@@ -64,8 +64,6 @@ public:
     /// This function does nothing and is here only to satisfy QQmlParserStatus interface
     void classBegin() override;
 
-public slots:
-
 signals:
     void cameraChanged(QCamera*);
 
@@ -77,8 +75,13 @@ signals:
     void capturedChanged(const QString& captured);
     void cameraAvailableChanged(const bool cameraAvailable);
     void errorOccurred(const QString& error);
+
+public slots:
+    void onErrorOccurred(const QString& error);
+
 protected:
     QCamera* makeDefaultCamera();
+
 private:
     /// Decoder object, doing the actual Qr detection and conversion
     SBarcodeDecoder m_decoder;

@@ -1,12 +1,15 @@
 #include "SBarcodeScanner.h"
 #include <QMediaDevices>
+#include <QTextCodec>
 #include "private/debug.h"
 
 
 SBarcodeScanner::SBarcodeScanner(QObject* parent) : QVideoSink(parent), m_camera(nullptr), m_scanning{true} {
     // Print error message if error occurs
     connect(this, &SBarcodeScanner::errorOccurred, this, [](const QString& msg){
-        qWarning() << "SCodes Error:" << msg;
+        QTextCodec* codec = QTextCodec::codecForName("UTF-8");
+        QString cleanError = codec->toUnicode(msg.toLocal8Bit());
+        qWarning() << "SCodes Error:" << cleanError;
     });
     // Connect self to the media capture session
     m_capture.setVideoSink(this);
@@ -184,4 +187,9 @@ void SBarcodeScanner::setForwardVideoSink(QVideoSink* newSink)
     }
     m_forwardVideoSink = newSink;
     forwardVideoSinkChanged(m_forwardVideoSink);
+}
+
+void SBarcodeScanner::onErrorOccurred(const QString& error)
+{
+    emit errorOccurred(error);
 }
