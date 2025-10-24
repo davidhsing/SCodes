@@ -50,11 +50,7 @@ void SBarcodeScanner::tryProcessFrame(const QVideoFrame& frame)
 
     // Scale the normalized rectangle for camera resolution
     auto r = m_camera->cameraFormat().resolution();
-    auto cRect = QRectF{m_captureRect.x()*r.width(),
-            m_captureRect.y()*r.height(),
-            m_captureRect.width()*r.width(),
-                       m_captureRect.height()*r.height()}.toRect();
-
+    auto cRect = QRectF{m_captureRect.x() * r.width(), m_captureRect.y() * r.height(), m_captureRect.width() * r.width(), m_captureRect.height() * r.height()}.toRect();
     // Invoke processing asynchronously, potential result will be reported by capturedChanged signal
     // We can copy QVideoFrame as it's explicitly shared (just like std::shared_ptr)
     // Note the releasing the guard variable
@@ -62,15 +58,6 @@ void SBarcodeScanner::tryProcessFrame(const QVideoFrame& frame)
         m_decoder.process(m_decoder.videoFrameToImage(frame, cRect),SCodes::toZXingFormat(SCodes::SBarcodeFormat::Basic));
         m_frameProcessingInProgress = false;
     });
-}
-
-void SBarcodeScanner::setCameraAvailable(bool available)
-{
-    if (m_cameraAvailable == available) {
-        return;
-    }
-    m_cameraAvailable = available;
-    emit cameraAvailableChanged();
 }
 
 QCamera* SBarcodeScanner::makeDefaultCamera()
@@ -99,7 +86,6 @@ QCamera* SBarcodeScanner::makeDefaultCamera()
         errorOccured("A default camera was found but it has no supported formats. The Camera may be wrongly configured.");
         return nullptr;
     }
-
     /// Pick best format - most pixels
     std::sort(supportedFormats.begin(),supportedFormats.end(),[](const auto& f1, const auto& f2){
         QSize r1 = f1.resolution();
@@ -110,6 +96,24 @@ QCamera* SBarcodeScanner::makeDefaultCamera()
     camera->setFocusMode(QCamera::FocusModeAuto);
     camera->setCameraFormat(format);
     return camera;
+}
+
+void SBarcodeScanner::setScanning(bool scanning)
+{
+    if (m_scanning == scanning) {
+        return;
+    }
+    m_scanning = scanning;
+    emit scanningChanged(m_scanning);
+}
+
+void SBarcodeScanner::setCameraAvailable(bool available)
+{
+    if (m_cameraAvailable == available) {
+        return;
+    }
+    m_cameraAvailable = available;
+    emit cameraAvailableChanged(m_cameraAvailable);
 }
 
 void SBarcodeScanner::setCaptured(const QString& captured)
@@ -145,7 +149,6 @@ void SBarcodeScanner::setCamera(QCamera* newCamera)
         }
         m_camera = nullptr;
     }
-
     // connect new camera if not null
     if (newCamera)
     {
@@ -163,7 +166,6 @@ void SBarcodeScanner::setCamera(QCamera* newCamera)
             << "  Pixel format:" << m_camera->cameraFormat().pixelFormat() << '\n'
             << "  Resolution:" << m_camera->cameraFormat().resolution() << '\n'
             << "  FPS:" << m_camera->cameraFormat().minFrameRate() << "-" << m_camera->cameraFormat().maxFrameRate();
-
     emit cameraChanged(m_camera);
 }
 

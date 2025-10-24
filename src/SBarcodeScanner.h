@@ -25,9 +25,9 @@ class SBarcodeScanner : public QVideoSink, public QQmlParserStatus
     QML_ELEMENT
 
     /// Set this property to the videosink that's supposed to do further processing on video frame. A VideoOutput.videosink for example, to show the video.
-    Q_PROPERTY(QVideoSink* forwardVideoSink READ forwardVideoSink NOTIFY forwardVideoSinkChanged)
+    Q_PROPERTY(QVideoSink* forwardVideoSink READ forwardVideoSink WRITE setForwardVideoSink NOTIFY forwardVideoSinkChanged)
     /// This property controls wether the frames are passed along to the decoder or not (default true)
-    Q_PROPERTY(bool scanning READ scanning)
+    Q_PROPERTY(bool scanning READ scanning WRITE setScanning NOTIFY scanningChanged)
     /// This property holds the captured text
     Q_PROPERTY(QString captured READ captured)
     /// Set this to the subsection of the frame that's acutally supposed to be scanned for qr code. In Normalized coordinates (0.0-1.0)
@@ -51,9 +51,10 @@ public:
     SBarcodeDecoder* getDecoder() {return &m_decoder;};
 
     // Setter methods (only for properties that still need WRITE access)
+    void setForwardVideoSink(QVideoSink* sink);
+    void setScanning(const bool scanning);
     void setCaptureRect(const QRectF& captureRect);
     void setCamera(QCamera* newCamera);
-    void setForwardVideoSink(QVideoSink* sink);
 
     /*!
      * This function is called after all properties set in Qml instantiation have been assigned.
@@ -71,9 +72,10 @@ signals:
     /// This signal emitted for running process in a thread
     void process(const QImage& image);
     void forwardVideoSinkChanged(QVideoSink*);
+    void scanningChanged(const bool scanning);
     void captureRectChanged(const QRectF& captureRect);
     void capturedChanged(const QString& captured);
-    void cameraAvailableChanged();
+    void cameraAvailableChanged(const bool cameraAvailable);
     void errorOccured(const QString& errorString);
 protected:
     QCamera* makeDefaultCamera();
