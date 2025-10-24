@@ -12,8 +12,9 @@
 #include <QQmlContext>
 #include <QOpenGLContext>
 #include <QOpenGLFunctions>
-
 #include "SBarcodeDecoder.h"
+
+
 /*!
  * \brief The SBarcodeScanner class processes the video input from Camera,
  */
@@ -24,21 +25,37 @@ class SBarcodeScanner : public QVideoSink, public QQmlParserStatus
     QML_ELEMENT
 
     /// Set this property to the videosink that's supposed to do further processing on video frame. A VideoOutput.videosink for example, to show the video.
-    Q_PROPERTY(QVideoSink* forwardVideoSink MEMBER m_forwardVideoSink WRITE setForwardVideoSink NOTIFY forwardVideoSinkChanged)
+    Q_PROPERTY(QVideoSink* forwardVideoSink READ forwardVideoSink NOTIFY forwardVideoSinkChanged)
     /// This property controls wether the frames are passed along to the decoder or not (default true)
-    Q_PROPERTY(bool scanning MEMBER m_scanning)
+    Q_PROPERTY(bool scanning READ scanning)
+    /// This property holds the captured text
+    Q_PROPERTY(QString captured READ captured)
     /// Set this to the subsection of the frame that's acutally supposed to be scanned for qr code. In Normalized coordinates (0.0-1.0)
     Q_PROPERTY(QRectF captureRect READ captureRect WRITE setCaptureRect NOTIFY captureRectChanged)
     /// Set to true if camera property is set
-    Q_PROPERTY(bool cameraAvailable READ cameraAvailable NOTIFY cameraAvailableChanged)
+    Q_PROPERTY(bool cameraAvailable READ cameraAvailable WRITE setCameraAvailable NOTIFY cameraAvailableChanged)
     /// Optional property if you want to set your own camera as an video input for scanning. Default video input is chosen by default.
-    Q_PROPERTY(QCamera* camera MEMBER m_camera WRITE setCamera NOTIFY cameraChanged)
+    Q_PROPERTY(QCamera* camera READ camera WRITE setCamera NOTIFY cameraChanged)
 
 public:
     explicit SBarcodeScanner(QObject *parent = nullptr);
     ~SBarcodeScanner() override;
 
-    SBarcodeDecoder *getDecoder();
+    // Getter methods
+    QVideoSink* forwardVideoSink() const {return m_forwardVideoSink;};
+    bool scanning() const {return m_scanning;};
+    QString captured() const {return m_captured;};
+    QRectF captureRect() const {return m_captureRect;};
+    bool cameraAvailable() const {return m_cameraAvailable;};
+    QCamera* camera() const {return m_camera;};
+    SBarcodeDecoder* getDecoder() {return &m_decoder;};
+
+    // Setter methods (only for properties that still need WRITE access)
+    void setCaptureRect(const QRectF& captureRect);
+    void setCamera(QCamera* newCamera);
+    void setForwardVideoSink(QVideoSink* sink);
+    void setCameraAvailable(bool available);
+
     /*!
      * This function is called after all properties set in Qml instantiation have been assigned.
      * This allows us to, for example create default camera if none has been set by the user
@@ -47,24 +64,16 @@ public:
     /// This function does nothing and is here only to satisfy QQmlParserStatus interface
     void classBegin() override;
 
-
-
-    QRectF captureRect() const;
-    void setCaptureRect(const QRectF &captureRect);
-    QString captured() const;
-    bool cameraAvailable() const;
-    void setCamera(QCamera *newCamera);
-    void setForwardVideoSink(QVideoSink* sink);
 public slots:
 
 signals:
-    void cameraChanged(QCamera *);
+    void cameraChanged(QCamera*);
 
     /// This signal emitted for running process in a thread
-    void process(const QImage &image);
+    void process(const QImage& image);
     void forwardVideoSinkChanged(QVideoSink*);
-    void captureRectChanged(const QRectF &captureRect);
-    void capturedChanged(const QString &captured);
+    void captureRectChanged(const QRectF& captureRect);
+    void capturedChanged(const QString& captured);
     void cameraAvailableChanged();
     void errorOccured(const QString& errorString);
 protected:
@@ -85,7 +94,7 @@ private:
     /// Separate thread for Qr code processing and detection
     QThread workerThread;
     /// Guard variable that prevents us from queueuing up the frames for processing
-    QAtomicInteger<bool> m_frameProcessingInProgress=false;
+    QAtomicInteger<bool> m_frameProcessingInProgress = false;
 
     bool m_scanning = true;
     bool m_cameraAvailable = false;
@@ -95,9 +104,9 @@ private:
      * \brief Function for setting capture string
      * \param const QString &captured - captured string
      */
-    void setCaptured(const QString &captured);
+    void setCaptured(const QString& captured);
     /// Try process captured frame, if previous frame is already processed - skip it
-    void tryProcessFrame(const QVideoFrame &frame);
+    void tryProcessFrame(const QVideoFrame& frame);
 
     /*!
      * \fn void setCameraAvailable(bool available)

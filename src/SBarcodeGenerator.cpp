@@ -12,9 +12,9 @@
 
 #include "MultiFormatWriter.h"
 
-SBarcodeGenerator::SBarcodeGenerator(QQuickItem *parent)
-    : QQuickItem(parent)
-{ }
+
+SBarcodeGenerator::SBarcodeGenerator(QQuickItem* parent) : QQuickItem(parent) {
+}
 
 bool SBarcodeGenerator::generate(const QString &inputString)
 {

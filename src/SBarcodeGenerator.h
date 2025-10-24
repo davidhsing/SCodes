@@ -6,11 +6,10 @@
 #include <qqml.h>
 #include <QQuickItem>
 #include <QObject>
-
 #include "BitMatrix.h"
 #include "ByteMatrix.h"
-
 #include "SBarcodeFormat.h"
+
 
 /*!
  * \brief The SBarcodeGenerator class allows you to configure, generate & save barcodes.
