@@ -1,5 +1,5 @@
-#include "SBarcodeScanner.h"
 #include <QMediaDevices>
+#include "SBarcodeScanner.h"
 #include "private/debug.h"
 
 

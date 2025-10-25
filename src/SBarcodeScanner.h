@@ -18,7 +18,7 @@
 /*!
  * \brief The SBarcodeScanner class processes the video input from Camera,
  */
-class SBarcodeScanner : public QVideoSink, public QQmlParserStatus
+class SBarcodeScanner final : public QVideoSink, public QQmlParserStatus
 {
     Q_OBJECT
     Q_INTERFACES(QQmlParserStatus)
@@ -42,17 +42,17 @@ public:
     ~SBarcodeScanner() override;
 
     // Getter methods
-    QVideoSink* forwardVideoSink() const {return m_forwardVideoSink;};
-    bool scanning() const {return m_scanning;};
-    QString captured() const {return m_captured;};
-    QRectF captureRect() const {return m_captureRect;};
-    bool cameraAvailable() const {return m_cameraAvailable;};
-    QCamera* camera() const {return m_camera;};
-    SBarcodeDecoder* getDecoder() {return &m_decoder;};
+    [[nodiscard]] QVideoSink* forwardVideoSink() const {return m_forwardVideoSink;}
+    [[nodiscard]] bool scanning() const {return m_scanning;}
+    [[nodiscard]] QString captured() const {return m_captured;}
+    [[nodiscard]] QRectF captureRect() const {return m_captureRect;}
+    [[nodiscard]] bool cameraAvailable() const {return m_cameraAvailable;}
+    [[nodiscard]] QCamera* camera() const {return m_camera;}
+    SBarcodeDecoder* getDecoder() {return &m_decoder;}
 
     // Setter methods (only for properties that still need WRITE access)
     void setForwardVideoSink(QVideoSink* sink);
-    void setScanning(const bool scanning);
+    void setScanning(bool scanning);
     void setCaptureRect(const QRectF& captureRect);
     void setCamera(QCamera* newCamera);
 
@@ -70,10 +70,10 @@ signals:
     /// This signal emitted for running process in a thread
     void process(const QImage& image);
     void forwardVideoSinkChanged(QVideoSink*);
-    void scanningChanged(const bool scanning);
+    void scanningChanged(bool scanning);
     void captureRectChanged(const QRectF& captureRect);
     void capturedChanged(const QString& captured);
-    void cameraAvailableChanged(const bool cameraAvailable);
+    void cameraAvailableChanged(bool cameraAvailable);
     void errorOccurred(const QString& error);
 
 public slots:
@@ -106,7 +106,7 @@ private:
     /*!
      * \fn void setCaptured(const QString &captured)
      * \brief Function for setting capture string
-     * \param const QString &captured - captured string
+     * \param captured - captured string
      */
     void setCaptured(const QString& captured);
     /// Try process captured frame, if previous frame is already processed - skip it
@@ -115,7 +115,7 @@ private:
     /*!
      * \fn void setCameraAvailable(bool available)
      * \brief Function setting camera availability
-     * \param bool available - camera availability status
+     * \param available - camera availability status
      */
     void setCameraAvailable(bool available);
 };

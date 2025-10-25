@@ -14,7 +14,7 @@
 /*!
  * \brief The SBarcodeGenerator class allows you to configure, generate & save barcodes.
  */
-class SBarcodeGenerator : public QQuickItem
+class SBarcodeGenerator final : public QQuickItem
 {
     Q_OBJECT
     Q_PROPERTY(int imageWidth READ imageWidth WRITE setImageWidth NOTIFY imageWidthChanged)
@@ -37,9 +37,9 @@ public:
     /*!
      * \fn explicit SBarcodeGenerator(QObject *parent)
      * \brief Constructor.
-     * \param QObject *parent - a pointer to the parent object.
+     * \param parent - a pointer to the parent object.
      */
-    explicit SBarcodeGenerator(QQuickItem *parent = nullptr);
+    explicit SBarcodeGenerator(QQuickItem* parent = nullptr);
 
     /*!
      * \fn ~SBarcodeGenerator() override
@@ -51,12 +51,12 @@ public:
      * \fn SCodes::SBarcodeFormat format() const
      * \brief Returns current barcode format.
      */
-    SCodes::SBarcodeFormat format() const;
+    SCodes::SBarcodeFormat format() const {return m_format;}
 
     /*!
      * \fn void setFormat(SCodes::SBarcodeFormat format)
      * \brief Sets the barcode format.
-     * \param SCodes::SBarcodeFormat format - barcode format.
+     * \param format - barcode format.
      */
     void setFormat(SCodes::SBarcodeFormat format);
 
@@ -64,50 +64,50 @@ public:
      * \fn QString centerImage() const
      * \brief Returns the center image path.
      */
-    QString centerImage() const;
+    QString centerImage() const {return m_centerImage;}
 
     /*!
      * \fn void setCenterImage(const QString &centerImage)
      * \brief Sets the center image path.
-     * \param const QString &centerImage - new image path.
+     * \param centerImage - new image path.
      */
-    void setCenterImage(const QString &centerImage);
+    void setCenterImage(const QString& centerImage);
 
     /*!
      * \fn int centerImageRatio() const
      * \brief Returns the center image ratio.
      */
-    int centerImageRatio() const;
+    int centerImageRatio() const {return m_centerImageRatio;}
 
     /*!
      * \fn void setCenterImageRatio(int centerImageRatio)
      * \brief Sets the center image ratio.
-     * \param const int &centerImageRatio - new image ratio.
+     * \param centerImageRatio - new image ratio.
      */
     void setCenterImageRatio(int centerImageRatio);
-    
+
     /*!
      * \fn QColor foregroundColor() const
      * \brief Returns foregroundColor.
      */
-    QColor foregroundColor() const;
+    QColor foregroundColor() const {return m_foregroundColor;}
 
     /*!
      * \fn QColor backgroundColor() const
      * \brief Returns backgroundColor.
      */
-    QColor backgroundColor() const;
+    QColor backgroundColor() const {return m_backgroundColor;}
 
     /*!
      * \fn int imageWidth() const
      * \brief Returns the image width.
      */
-    int imageWidth() const;
+    int imageWidth() const {return m_imageWidth;}
 
     /*!
      * \fn void setImageWidth(int width)
      * \brief Sets the image width.
-     * \param int width - image width.
+     * \param width - image width.
      */
     void setImageWidth(int width);
 
@@ -115,12 +115,12 @@ public:
      * \fn int imageHeight() const
      * \brief Returns the image height.
      */
-    int imageHeight() const;
+    int imageHeight() const {return m_imageHeight;}
 
     /*!
      * \fn void setImageHeight(int height)
      * \brief Sets the image height.
-     * \param int height - image height.
+     * \param height - image height.
      */
     void setImageHeight(int height);
 
@@ -128,12 +128,12 @@ public:
      * \fn int imageMargin() const
      * \brief Returns the image margin.
      */
-    int imageMargin() const;
+    int imageMargin() const {return m_imageMargin;}
 
     /*!
      * \fn void setImageMargin(int margin)
      * \brief Sets the image margin.
-     * \param int margin - image margin.
+     * \param margin - image margin.
      */
     void setImageMargin(int margin);
 
@@ -141,88 +141,88 @@ public:
      * \fn int eccLevel() const
      * \brief Returns the ecc level.
      */
-    int eccLevel() const;
+    int eccLevel() const {return m_eccLevel;}
 
     /*!
      * \fn void setEccLevel(int eccLevel)
      * \brief Sets the ecc level.
-     * \param int eccLevel - ecc level.
+     * \param eccLevel - ecc level.
      */
     void setEccLevel(int eccLevel);
-
-    /*!
-     * \fn QString fileName() const
-     * \brief Returns the file name.
-     */
-    QString fileName() const;
-
-    /*!
-     * \fn void setFileName(const QString &fileName)
-     * \brief Sets the file name.
-     * \param const QString &fileName - file name.
-     */
-    void setFileName(const QString &fileName);
 
     /*!
      * \fn QString filePath() const
      * \brief Returns the file path.
      */
-    QString filePath() const;
+    QString filePath() const {return m_filePath;}
 
     /*!
      * \fn void setFilePath(const QString &filePath)
      * \brief Sets the file path.
-     * \param const QString &filePath - file path.
+     * \param filePath - file path.
      */
-    void setFilePath(const QString &filePath);
+    void setFilePath(const QString& filePath);
+
+    /*!
+     * \fn QString fileName() const
+     * \brief Returns the file name.
+     */
+    QString fileName() const {return m_fileName;}
+
+    /*!
+     * \fn void setFileName(const QString &fileName)
+     * \brief Sets the file name.
+     * \param fileName - file name.
+     */
+    void setFileName(const QString& fileName);
 
     /*!
      * \fn QString fileExtension() const
      * \brief Returns the fileExtension.
      */
-    QString fileExtension() const;
+    QString fileExtension() const {return m_fileExtension;}
 
     /*!
      * \fn void setFileExtension(const QString &fileExtension)
      * \brief Sets the fileExtension.
-     * \param const QString &fileExtension - fileExtension.
+     * \param fileExtension - fileExtension.
      */
-    void setFileExtension(const QString &fileExtension);
+    void setFileExtension(const QString& fileExtension);
 
     /*!
      * \fn QString outputFile() const
      * \brief Returns the file path.
      */
-    QString outputFile() const;
+    QString outputFile() const {return m_outputFile;}
 
     /*!
      * \fn QString inputText() const
      * \brief Returns the input text.
      */
-    QString inputText() const;
+    QString inputText() const {return m_inputText;}
 
     /*!
      * \fn void setInputText(const QString &inputText)
      * \brief Sets the input text.
-     * \param const QString &inputText - input text.
+     * \param inputText - input text.
      */
-    void setInputText(const QString &inputText);
+    void setInputText(const QString& inputText);
 
 public slots:
 
     /*!
      * \fn bool generate(const QString &inputString)
      * \brief Function for generating barcodes from given string
-     * \param const QString &inputString - string of the barcode
+     * \param inputString - string of the barcode
      */
-    bool generate(const QString &inputString);
+    bool generate(const QString& inputString);
 
     /*!
      * \fn void setFormat(const QString &formatName)
      * \brief Sets the barcode format.
-     * \param const QString &formatName - barcode format string.
+     * \param formatName - barcode format string.
      */
-    void setFormat(const QString &formatName);
+    void setFormat(const QString& formatName);
 
     /*!
      * \fn bool saveImage()
@@ -233,76 +233,76 @@ public slots:
     /*!
      * \fn void setForegroundColor(const QColor &newForegroundColor)
      * \brief Sets the foreground.
-     * \param const QColor &foreground - foreground color.
+     * \param foregroundColor - foreground color.
      */
-    void setForegroundColor(const QColor &foregroundColor);
+    void setForegroundColor(const QColor& foregroundColor);
 
     /*!
      * \fn void setBackgroundColor(const QColor &backgroundColor)
      * \brief Sets the backgroundColor.
-     * \param const QColor &backgroundColor - background color.
+     * \param backgroundColor - background color.
      */
-    void setBackgroundColor(const QColor &backgroundColor);
+    void setBackgroundColor(const QColor& backgroundColor);
 
 signals:
 
     /*!
      * \brief This signal is emitted when barcode generation is finished. If any error happens, sends the error string to QML.
-     * \param const QString &error - error string.
+     * \param error - error string.
      */
-    void generationFinished(const QString &error = "");
+    void generationFinished(const QString& error = "");
 
     /*!
      * \brief This signal is emitted to send image width to QML.
-     * \param int width - image width.
+     * \param width - image width.
      */
     void imageWidthChanged(int width);
 
     /*!
      * \brief This signal is emitted to send image height to QML.
-     * \param int height - image height.
+     * \param height - image height.
      */
     void imageHeightChanged(int height);
 
     /*!
      * \brief This signal is emitted to send image margin to QML.
-     * \param int margin - image margin.
+     * \param margin - image margin.
      */
     void imageMarginChanged(int margin);
 
     /*!
      * \brief This signal is emitted to send eccLevel to QML.
-     * \param int eccLevel - error correction code level.
+     * \param eccLevel - error correction code level.
      */
     void eccLevelChanged(int eccLevel);
 
     /*!
      * \brief This signal is emitted to send filePath to QML.
-     * \param const QString &filePath - filePath.
+     * \param filePath - filePath.
      */
-    void filePathChanged(const QString &filePath);
+    void filePathChanged(const QString& filePath);
 
     /*!
      * \brief This signal is emitted to send fileName to QML.
-     * \param const QString &fileName - fileName.
+     * \param fileName - fileName.
      */
-    void fileNameChanged(const QString &fileName);
+    void fileNameChanged(const QString& fileName);
 
     /*!
      * \brief This signal is emitted to send fileExtension to QML.
-     * \param const QString &fileExtension - fileExtension.
+     * \param fileExtension - fileExtension.
      */
-    void fileExtensionChanged(const QString &fileExtension);
+    void fileExtensionChanged(const QString& fileExtension);
 
     /*!
      * \brief This signal is emitted to send inputText to QML.
-     * \param const QString &inputText - inputText.
+     * \param inputText - inputText.
      */
-    void inputTextChanged(const QString &inputText);
+    void inputTextChanged(const QString& inputText);
 
     /*!
      * \brief This signal is emitted to send barcode format to QML.
-     * \param SCodes::SBarcodeFormat format - barcode format.
+     * \param format - barcode format.
      */
     void formatChanged(SCodes::SBarcodeFormat format);
 
@@ -318,15 +318,15 @@ signals:
 
     /*!
      * \brief This signal is emitted to send foregroundColor to QML.
-     * \param const QColor &foregroundColor - foregroundColor.
+     * \param foregroundColor - foregroundColor.
      */
-    void foregroundColorChanged();
+    void foregroundColorChanged(const QColor& foregroundColor);
 
     /*!
      * \brief This signal is emitted to send backgroundColor to QML.
-     * \param const QColor &backgroundColor - backgroundColor.
+     * \param backgroundColor - backgroundColor.
      */
-    void backgroundColorChanged();
+    void backgroundColorChanged(const QColor& backgroundColor);
 
 private:
     int m_imageWidth    = 500;
@@ -348,20 +348,13 @@ private:
 
     /*!
      * \brief This method draws Rectangle and `imageRatio` smaller Image in the center of that Rectangle.
-     * \param QImage *parentImage - Image parent. It is used for Painter constructor.
-     * \param QString centerImage - Image path.
-     * \param QSize imageSize - Image size.
-     * \param int x - X coordinate where Image should be painted.
-     * \param Qint y - Y coordinate where Image should be painted.
+     * \param parentImage - Image parent. It is used for Painter constructor.
+     * \param centerImage - Image path.
+     * \param imageSize - Image size.
+     * \param x - X coordinate where Image should be painted.
+     * \param y - Y coordinate where Image should be painted.
      */
-    void drawCenterImage(QImage *parentImage, const QString &centerImage, QSize imageSize, int x, int y);
-
-    /*!
-     * \fn void setEccLvel(int eccLevel)
-     * \brief Sets the QR code ecc level.
-     * \param int eccLevel - QR code ecc level.
-     */
-    void setEccLvel(int eccLevel);
+    void drawCenterImage(QImage* parentImage, const QString& centerImage, QSize imageSize, int x, int y);
 
     QColor m_foregroundColor = "black";
     QColor m_backgroundColor = "white";
