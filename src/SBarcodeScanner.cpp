@@ -5,17 +5,9 @@
 
 SBarcodeScanner::SBarcodeScanner(QObject* parent) : QVideoSink(parent), m_camera(nullptr), m_scanning{true} {
     // Print error message if error occurs
-    connect(this, &SBarcodeScanner::errorOccurred, this, [](const QString& msg){
-        // Handle potential encoding issues for non-UTF8 systems
-        QString cleanError = msg;
-        QByteArray localBytes = msg.toLocal8Bit();
-        // Try to detect and convert from local encoding to UTF-8
-        if (QString::fromLocal8Bit(localBytes) != msg) {
-            // If conversion produces different result, try to handle as GBK (common in Chinese systems)
-            cleanError = QString::fromLocal8Bit(localBytes);
-        }
-        qWarning() << "SCodes Error:" << cleanError;
-    });
+    // connect(this, &SBarcodeScanner::errorOccurred, this, [](const QString& msg){
+    //     qWarning() << "SCodes Error:" << msg;
+    // });
     // Connect self to the media capture session
     m_capture.setVideoSink(this);
     connect(this, &QVideoSink::videoFrameChanged, this, &SBarcodeScanner::tryProcessFrame);
