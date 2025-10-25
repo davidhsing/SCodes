@@ -5,9 +5,9 @@
 
 SBarcodeScanner::SBarcodeScanner(QObject* parent) : QVideoSink(parent), m_camera(nullptr), m_scanning{true} {
     // Print error message if error occurs
-    // connect(this, &SBarcodeScanner::errorOccurred, this, [](const QString& msg){
-    //     qWarning() << "SCodes Error:" << msg;
-    // });
+    connect(this, &SBarcodeScanner::errorOccurred, this, [](const QString& msg){
+        qWarning() << "SCodes Error:" << msg;
+    });
     // Connect self to the media capture session
     m_capture.setVideoSink(this);
     connect(this, &QVideoSink::videoFrameChanged, this, &SBarcodeScanner::tryProcessFrame);
