@@ -14,7 +14,7 @@
 /*!
  * \brief The SBarcodeGenerator class allows you to configure, generate & save barcodes.
  */
-class SBarcodeGenerator final : public QQuickItem
+class SBarcodeGenerator : public QQuickItem
 {
     Q_OBJECT
     Q_PROPERTY(int imageWidth READ imageWidth WRITE setImageWidth NOTIFY imageWidthChanged)

@@ -18,7 +18,7 @@
 /*!
  * \brief The SBarcodeScanner class processes the video input from Camera,
  */
-class SBarcodeScanner final : public QVideoSink, public QQmlParserStatus
+class SBarcodeScanner : public QVideoSink, public QQmlParserStatus
 {
     Q_OBJECT
     Q_INTERFACES(QQmlParserStatus)
