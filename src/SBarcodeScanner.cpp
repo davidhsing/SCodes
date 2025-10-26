@@ -154,13 +154,12 @@ void SBarcodeScanner::setCamera(QCamera* camera)
     {
         const auto format = camera->cameraFormat();
         connect(camera, &QCamera::errorOccurred, this, [this](auto err, const auto& string){
-            #ifdef Q_OS_WIN
-                QByteArray ba = string.toLocal8Bit();
-                QString errorStr = QString::fromLocal8Bit(ba);
+            QString errorStr = m_camera->errorString();
+            if (!errorStr.isEmpty()) {
                 errorOccurred("Camera error: " + errorStr);
-            #else
-                errorOccurred("Camera error: " + string);
-            #endif
+            } else {
+                errorOccurred("Camera error code: " + QString::number(err));
+            }
         });
         m_decoder.setResolution(format.resolution());
         m_capture.setCamera(camera);
