@@ -154,7 +154,7 @@ void SBarcodeScanner::setCamera(QCamera* camera)
     {
         const auto format = camera->cameraFormat();
         connect(camera, &QCamera::errorOccurred, this, [this](auto err, const auto& string){
-            QString errorStr = m_camera->errorString();
+            QString errorStr = camera->errorString();
             if (!errorStr.isEmpty()) {
                 errorOccurred("Camera error: " + errorStr);
             } else {
