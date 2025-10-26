@@ -179,16 +179,8 @@ void SBarcodeScanner::setCamera(QCamera* camera)
                 case QCamera::CameraError:
                     errorDesc = "Camera error";
                     break;
-                case QCamera::InvalidRequestError:
-                    errorDesc = "Invalid request error";
-                    break;
-                case QCamera::ServiceMissingError:
-                    errorDesc = "Service missing error";
-                    break;
-                case QCamera::NotSupportedFeatureError:
-                    errorDesc = "Not supported feature error";
-                    break;
                 default:
+                    // 对于Qt 6中可能不存在的枚举值，使用默认描述
                     errorDesc = "Unknown error";
                     break;
                 }
