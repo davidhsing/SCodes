@@ -132,9 +132,9 @@ void SBarcodeScanner::setCaptureRect(const QRectF& captureRect)
     emit captureRectChanged(m_captureRect);
 }
 
-void SBarcodeScanner::setCamera(QCamera* newCamera)
+void SBarcodeScanner::setCamera(QCamera* camera)
 {
-    if (m_camera == newCamera){
+    if (m_camera == camera){
         return;
     }
     // disconnect old camera if not already null
@@ -150,15 +150,21 @@ void SBarcodeScanner::setCamera(QCamera* newCamera)
         m_camera = nullptr;
     }
     // connect new camera if not null
-    if (newCamera)
+    if (camera)
     {
-        auto format = newCamera->cameraFormat();
-        connect(newCamera,&QCamera::errorOccurred, this, [this](auto err, const auto& string){
-            errorOccurred("Camera error:" + string);
+        const auto format = camera->cameraFormat();
+        connect(camera, &QCamera::errorOccurred, this, [this](auto err, const auto& string){
+            #ifdef Q_OS_WIN
+                QByteArray ba = string.toLocal8Bit();
+                QString errorStr = QString::fromLocal8Bit(ba);
+                errorOccurred("Camera error: " + errorStr);
+            #else
+                errorOccurred("Camera error: " + string);
+            #endif
         });
         m_decoder.setResolution(format.resolution());
-        m_capture.setCamera(newCamera);
-        m_camera = newCamera;
+        m_capture.setCamera(camera);
+        m_camera = camera;
         m_camera->start();
     }
     sDebug() << "New Camera set: " << m_camera
@@ -171,15 +177,13 @@ void SBarcodeScanner::setCamera(QCamera* newCamera)
 
 void SBarcodeScanner::setForwardVideoSink(QVideoSink* sink)
 {
-    if (m_forwardVideoSink == sink){
+    if (m_forwardVideoSink == sink) {
         return;
     }
-    if (m_forwardVideoSink)
-    {
+    if (m_forwardVideoSink) {
         disconnect(this, nullptr, m_forwardVideoSink, nullptr);
     }
-    if (sink)
-    {
+    if (sink) {
         connect(this, &SBarcodeScanner::videoFrameChanged, sink, &QVideoSink::setVideoFrame);
     }
     m_forwardVideoSink = sink;
