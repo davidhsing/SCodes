@@ -153,15 +153,14 @@ void SBarcodeScanner::setCamera(QCamera* camera)
     if (camera)
     {
         const auto format = camera->cameraFormat();
-        connect(camera, &QCamera::errorOccurred, this, [this](auto err, const auto& string){
-            // 获取错误代码和错误字符串
-            QCamera::Error errorCode = m_camera->error();
-            QString errorStr = m_camera->errorString();
+        connect(camera, &QCamera::errorOccurred, this, [this, camera](auto err, const auto& string){
+            // 使用传入的camera对象而不是m_camera
+            QString errorStr = camera->errorString();
             
-            // 检查errorString是否包含乱码（通过检查是否包含无效字符）
+            // 检查errorString是否包含乱码（检查是否包含无效字符65533）
             bool hasGarbageData = false;
             for (const QChar& ch : errorStr) {
-                if (ch.unicode() == 65535 || ch.unicode() == 0) {
+                if (ch.unicode() == 65533 || ch.unicode() == 0) {
                     hasGarbageData = true;
                     break;
                 }
@@ -170,21 +169,8 @@ void SBarcodeScanner::setCamera(QCamera* camera)
             if (!hasGarbageData && !errorStr.isEmpty()) {
                 errorOccurred("Camera error: " + errorStr);
             } else {
-                // 如果errorString包含乱码或为空，使用错误代码提供通用错误信息
-                QString errorDesc;
-                switch (errorCode) {
-                case QCamera::NoError:
-                    errorDesc = "No error";
-                    break;
-                case QCamera::CameraError:
-                    errorDesc = "Camera error";
-                    break;
-                default:
-                    // 对于Qt 6中可能不存在的枚举值，使用默认描述
-                    errorDesc = "Unknown error";
-                    break;
-                }
-                errorOccurred("Camera error occurred (" + errorDesc + ", error code: " + QString::number(errorCode) + ")");
+                // 如果errorString包含乱码或为空，提供通用错误信息
+                errorOccurred("Camera error occurred (error code: " + QString::number(err) + ")");
             }
         });
         m_decoder.setResolution(format.resolution());
