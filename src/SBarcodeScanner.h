@@ -26,7 +26,7 @@ class SBarcodeScanner : public QVideoSink, public QQmlParserStatus
 
     /// Set this property to the videosink that's supposed to do further processing on video frame. A VideoOutput.videosink for example, to show the video.
     Q_PROPERTY(QVideoSink* forwardVideoSink READ forwardVideoSink WRITE setForwardVideoSink NOTIFY forwardVideoSinkChanged)
-    /// This property controls wether the frames are passed along to the decoder or not (default true)
+    /// This property controls whether the frames are passed along to the decoder or not (default true)
     Q_PROPERTY(bool scanning READ scanning WRITE setScanning NOTIFY scanningChanged)
     /// This property holds the captured text
     Q_PROPERTY(QString captured READ captured)
@@ -34,7 +34,7 @@ class SBarcodeScanner : public QVideoSink, public QQmlParserStatus
     Q_PROPERTY(QRectF captureRect READ captureRect WRITE setCaptureRect NOTIFY captureRectChanged)
     /// Set to true if camera property is set
     Q_PROPERTY(bool cameraAvailable READ cameraAvailable WRITE setCameraAvailable NOTIFY cameraAvailableChanged)
-    /// Optional property if you want to set your own camera as an video input for scanning. Default video input is chosen by default.
+    /// Optional property if you want to set your own camera as a video input for scanning. Default video input is chosen by default.
     Q_PROPERTY(QCamera* camera READ camera WRITE setCamera NOTIFY cameraChanged)
 
 public:

@@ -55,7 +55,7 @@ void SBarcodeScanner::tryProcessFrame(const QVideoFrame& frame)
     // We can copy QVideoFrame as it's explicitly shared (just like std::shared_ptr)
     // Note the releasing the guard variable
     QMetaObject::invokeMethod(&m_decoder, [=](){
-        m_decoder.process(m_decoder.videoFrameToImage(frame, cRect),SCodes::toZXingFormat(SCodes::SBarcodeFormat::Basic));
+        m_decoder.process(m_decoder.videoFrameToImage(frame, cRect), SCodes::toZXingFormat(SCodes::SBarcodeFormat::Basic));
         m_frameProcessingInProgress = false;
     });
 }
@@ -87,10 +87,10 @@ QCamera* SBarcodeScanner::makeDefaultCamera()
         return nullptr;
     }
     /// Pick best format - most pixels
-    std::sort(supportedFormats.begin(),supportedFormats.end(),[](const auto& f1, const auto& f2){
+    std::sort(supportedFormats.begin(), supportedFormats.end(), [](const auto& f1, const auto& f2){
         QSize r1 = f1.resolution();
         QSize r2 = f2.resolution();
-        return r1.height()*r1.width() < r2.height()*r2.width();
+        return r1.height()*r1.width() < r2.height() * r2.width();
     });
     auto format = supportedFormats.last();
     camera->setFocusMode(QCamera::FocusModeAuto);
@@ -141,9 +141,9 @@ void SBarcodeScanner::setCamera(QCamera* newCamera)
     if (m_camera)
     {
         m_camera->stop();
-        disconnect(m_camera,nullptr,this,nullptr);
+        disconnect(m_camera, nullptr, this, nullptr);
         m_capture.setCamera(nullptr);
-        if(m_camera->parent() == this)
+        if (m_camera->parent() == this)
         {
             delete m_camera;
         }
@@ -153,7 +153,7 @@ void SBarcodeScanner::setCamera(QCamera* newCamera)
     if (newCamera)
     {
         auto format = newCamera->cameraFormat();
-        connect(newCamera,&QCamera::errorOccurred,this,[this](auto err, const auto& string){
+        connect(newCamera,&QCamera::errorOccurred, this, [this](auto err, const auto& string){
             errorOccurred("Camera error:" + string);
         });
         m_decoder.setResolution(format.resolution());
@@ -169,21 +169,21 @@ void SBarcodeScanner::setCamera(QCamera* newCamera)
     emit cameraChanged(m_camera);
 }
 
-void SBarcodeScanner::setForwardVideoSink(QVideoSink* newSink)
+void SBarcodeScanner::setForwardVideoSink(QVideoSink* sink)
 {
-    if (m_forwardVideoSink == newSink){
+    if (m_forwardVideoSink == sink){
         return;
     }
     if (m_forwardVideoSink)
     {
-        disconnect(this,nullptr,m_forwardVideoSink,nullptr);
+        disconnect(this, nullptr, m_forwardVideoSink, nullptr);
     }
-    if (newSink)
+    if (sink)
     {
-        connect(this,&SBarcodeScanner::videoFrameChanged,newSink,&QVideoSink::setVideoFrame);
+        connect(this, &SBarcodeScanner::videoFrameChanged, sink, &QVideoSink::setVideoFrame);
     }
-    m_forwardVideoSink = newSink;
-    forwardVideoSinkChanged(m_forwardVideoSink);
+    m_forwardVideoSink = sink;
+    emit forwardVideoSinkChanged(m_forwardVideoSink);
 }
 
 void SBarcodeScanner::onErrorOccurred(const QString& error)
