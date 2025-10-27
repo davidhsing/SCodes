@@ -154,10 +154,7 @@ void SBarcodeScanner::setCamera(QCamera* camera)
     {
         const auto format = camera->cameraFormat();
         connect(camera, &QCamera::errorOccurred, this, [this, camera](auto err, const auto& string){
-            // 使用传入的camera对象而不是m_camera
             QString errorStr = camera->errorString();
-            
-            // 检查errorString是否包含乱码（检查是否包含无效字符65533）
             bool hasGarbageData = false;
             for (const QChar& ch : errorStr) {
                 if (ch.unicode() == 65533 || ch.unicode() == 0) {
@@ -165,12 +162,10 @@ void SBarcodeScanner::setCamera(QCamera* camera)
                     break;
                 }
             }
-            
             if (!hasGarbageData && !errorStr.isEmpty()) {
                 errorOccurred("Camera error: " + errorStr);
             } else {
-                // 如果errorString包含乱码或为空，提供通用错误信息
-                errorOccurred("Camera error occurred (error code: " + QString::number(err) + ")");
+                errorOccurred("Camera error code: " + QString::number(err));
             }
         });
         m_decoder.setResolution(format.resolution());
